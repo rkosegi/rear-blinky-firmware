@@ -17,12 +17,14 @@
 #include <Arduino.h>
 #include <BLEDevice.h>
 #include <BLEUUID.h>
+#include "battery.h"
 #include "consts.h"
 
 const static BLEUUID uuidDesc2901 = BLEUUID((uint16_t) 0x2901);
 
 const static BLEUUID uuidBatteryService = BLEUUID((uint16_t) 0x180F);
 const static BLEUUID uuidBatteryLevelChar = BLEUUID((uint16_t) 0x2A19);
+const static BLEUUID uuidBatteryVoltageChar = BLEUUID((uint16_t) 0x2B18);
 
 const static BLEUUID uuidLedService = BLEUUID("27f65506-2524-4df3-803a-5f74e5a32ada");
 const static BLEUUID uuidModeChar = BLEUUID("d5dc531e-0c9a-4cd9-a696-4bcb8c5be548");
@@ -44,6 +46,28 @@ class ServerCallbacks : public BLEServerCallbacks {
     }
 };
 
+class BatteryLevelCallback : public BLECharacteristicCallbacks {
+    void onRead(BLECharacteristic *pChar) override
+    {
+        uint8_t data[1] = {0};
+        float soc = blinky_battery_get_soc();
+        data[0] = (uint8_t) soc;
+        pChar->setValue(data, sizeof(data));
+    }
+};
+
+class BatteryVoltageCallback : public BLECharacteristicCallbacks {
+    void onRead(BLECharacteristic *pChar) override
+    {
+        uint8_t data[2] = {0};
+        float voltage = blinky_battery_get_voltage();
+        uint16_t mv = (uint16_t)(voltage * 1000);
+        data[0] = mv & 0xFF;
+        data[1] = (mv >> 8) & 0xFF;
+        pChar->setValue(data, sizeof(data));
+    }
+};
+
 void blinky_bt_init(BLECharacteristicCallbacks *modeCb, BLECharacteristicCallbacks *ledCb, BLECharacteristicCallbacks *dimCb) {
     BLECharacteristic *pChar = NULL;
     BLEDescriptor *desc = NULL;
@@ -53,10 +77,17 @@ void blinky_bt_init(BLECharacteristicCallbacks *modeCb, BLECharacteristicCallbac
 
     // Battery service
     pBLEBatteryService = pBLEServer->createService(uuidBatteryService);
-    pChar = pBLEBatteryService->createCharacteristic(uuidBatteryLevelChar, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
 
+    pChar = pBLEBatteryService->createCharacteristic(uuidBatteryLevelChar, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
     desc = new BLEDescriptor(uuidDesc2901);
     desc->setValue("Battery level");
+    pChar->setCallbacks(new BatteryLevelCallback());
+    pChar->addDescriptor(desc);
+
+    pChar = pBLEBatteryService->createCharacteristic(uuidBatteryVoltageChar, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_NOTIFY);
+    desc = new BLEDescriptor(uuidDesc2901);
+    desc->setValue("Battery voltage");
+    pChar->setCallbacks(new BatteryVoltageCallback());
     pChar->addDescriptor(desc);
 
     pBLEBatteryService->start();

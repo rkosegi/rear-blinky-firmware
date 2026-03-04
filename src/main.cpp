@@ -22,6 +22,7 @@
 #include "consts.h"
 #include "defs.h"
 #include "leds.h"
+#include "battery.h"
 
 // globals
 
@@ -141,6 +142,7 @@ void setup()
     Serial.begin(115200);
     Wire.begin();
 
+    blinky_battery_init();
     blinky_leds_init();
     blinky_buttons_init(btn1_isr);
     blinky_bt_init(modeCb, ledCb, dimCb);
