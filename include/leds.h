@@ -20,11 +20,26 @@
 #include "consts.h"
 #include "defs.h"
 
+#define MCP23017_ORA_PORT   1
+#define MCP23017_RED_PORT   0
+
+#define LED_PWM_CHANNEL     0
+#define LED_PWM_FREQ        4000
+#define LED_PWM_BITS        8
+#define LED_PWM_PIN         27
+#define LED_EN_PIN          26
+
+#define LED_PERCENT_2_DUTY(p)   (((1 << LED_PWM_BITS) * p) / 100)
+#define LED_DUTY_2_PERCENT(d)   (d * 100 / (1 << LED_PWM_BITS))
+
 void blinky_leds_init();
 void blinky_leds_set_ora(uint8_t val);
 void blinky_leds_set_red(uint8_t val);
 void blinky_leds_clear();
 void blinky_leds_seq(const struct seq_t *seq);
+void blinky_leds_set_dim_level(uint8_t percent);
+void blinky_leds_power_ctl(uint8_t power);
 
+uint8_t blinky_leds_get_dim_level();
 uint8_t blinky_leds_get_ora();
 uint8_t blinky_leds_get_red();

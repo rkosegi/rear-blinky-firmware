@@ -15,6 +15,7 @@
  */
 
 #include <Arduino.h>
+#include <Wire.h>
 
 #include "bt.h"
 #include "buttons.h"
@@ -113,16 +114,36 @@ public:
     }
 };
 
+class LedDimLevelCharacteristicCallback : public BLECharacteristicCallbacks
+{
+public:
+    void onRead(BLECharacteristic *pChar)
+    {
+        uint8_t data[1] = {0};
+        data[0] = blinky_leds_get_dim_level();
+        pChar->setValue(data, sizeof(data));
+    }
+
+    void onWrite(BLECharacteristic *pChar)
+    {
+        const auto val = pChar->getValue();
+        uint8_t lvl = (uint8_t)val.data()[0];
+        blinky_leds_set_dim_level(lvl);
+    }
+};
+
 BLECharacteristicCallbacks *modeCb = new ModeBleCharacteristicCallback();
 BLECharacteristicCallbacks *ledCb = new LedBitsBleCharacteristicCallback();
+BLECharacteristicCallbacks *dimCb = new LedDimLevelCharacteristicCallback();
 
 void setup()
 {
     Serial.begin(115200);
+    Wire.begin();
 
     blinky_leds_init();
     blinky_buttons_init(btn1_isr);
-    blinky_bt_init(modeCb, ledCb);
+    blinky_bt_init(modeCb, ledCb, dimCb);
 
     Serial.println("BLE configured");
 

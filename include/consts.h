@@ -16,22 +16,14 @@
 
 #pragma once
 
+#define I2C_SDA_PIN             SDA
+#define I2C_SCL_PIN             SCL
+
+#define MCP23017_ADDR           0x20
+
 #define BLINKY_MODE_NONE        0
 
 #define BTN_1_PIN               GPIO_NUM_15
-
-#define CTL_ORA_C1              GPIO_NUM_16
-#define CTL_ORA_C2              GPIO_NUM_17
-#define CTL_ORA_C3              GPIO_NUM_18
-#define CTL_ORA_C4              GPIO_NUM_19
-
-#define CTL_ORA_1               GPIO_NUM_25
-#define CTL_ORA_2               GPIO_NUM_26
-#define CTL_ORA_3               GPIO_NUM_27
-
-#define CTL_RED_L               GPIO_NUM_21
-#define CTL_RED_C               GPIO_NUM_22
-#define CTL_RED_R               GPIO_NUM_23
 
 #define BTN_DEBOUNCE_MILLIS     200ul
 

@@ -19,4 +19,7 @@
 #include <BLEAdvertising.h>
 #include "defs.h"
 
-void blinky_bt_init(BLECharacteristicCallbacks *modeCb, BLECharacteristicCallbacks *ledCb);
+void blinky_bt_init(
+    BLECharacteristicCallbacks *modeCb,
+    BLECharacteristicCallbacks *ledCb,
+    BLECharacteristicCallbacks *dimCb);

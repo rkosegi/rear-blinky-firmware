@@ -27,6 +27,7 @@ const static BLEUUID uuidBatteryLevelChar = BLEUUID((uint16_t) 0x2A19);
 const static BLEUUID uuidLedService = BLEUUID("27f65506-2524-4df3-803a-5f74e5a32ada");
 const static BLEUUID uuidModeChar = BLEUUID("d5dc531e-0c9a-4cd9-a696-4bcb8c5be548");
 const static BLEUUID uuidLedBitsChar = BLEUUID("1e0b46a6-7f06-4fc6-a66e-a054b158828d");
+const static BLEUUID uuidLedDimLvlChar = BLEUUID("d51f3202-4901-4624-a426-90b3dc87c0f2");
 
 static BLEAdvertising *pBLEAdvertising;
 static BLEService *pBLELedService;
@@ -43,7 +44,7 @@ class ServerCallbacks : public BLEServerCallbacks {
     }
 };
 
-void blinky_bt_init(BLECharacteristicCallbacks *modeCb, BLECharacteristicCallbacks *ledCb) {
+void blinky_bt_init(BLECharacteristicCallbacks *modeCb, BLECharacteristicCallbacks *ledCb, BLECharacteristicCallbacks *dimCb) {
     BLECharacteristic *pChar = NULL;
     BLEDescriptor *desc = NULL;
 
@@ -73,6 +74,12 @@ void blinky_bt_init(BLECharacteristicCallbacks *modeCb, BLECharacteristicCallbac
     desc = new BLEDescriptor(uuidDesc2901);
     desc->setValue("LED bits pattern");
     pChar->setCallbacks(ledCb);
+    pChar->addDescriptor(desc);
+
+    pChar = pBLELedService->createCharacteristic(uuidLedDimLvlChar, BLECharacteristic::PROPERTY_READ | BLECharacteristic::PROPERTY_WRITE);
+    desc = new BLEDescriptor(uuidDesc2901);
+    desc->setValue("LED dim level");
+    pChar->setCallbacks(dimCb);
     pChar->addDescriptor(desc);
 
     pBLELedService->start();

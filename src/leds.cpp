@@ -15,69 +15,60 @@
  */
 
 #include "leds.h"
+#include "MCP23017.h"
+
+static MCP23017 mcp(MCP23017_ADDR);
+
+
+uint8_t blinky_leds_get_dim_level() {
+    return LED_DUTY_2_PERCENT(ledcRead(LED_PWM_CHANNEL));
+}
+
+void blinky_leds_set_dim_level(uint8_t percent) {
+    if (percent > 100) {
+        percent = 100;
+    }
+    ledcWrite(LED_PWM_CHANNEL, LED_PERCENT_2_DUTY(percent));
+}
 
 void blinky_leds_init()
 {
-    pinMode(CTL_RED_L, OUTPUT);
-    pinMode(CTL_RED_C, OUTPUT);
-    pinMode(CTL_RED_R, OUTPUT);
+    pinMode(LED_EN_PIN, OUTPUT);
+    blinky_leds_power_ctl(LOW);
 
-    pinMode(CTL_ORA_C1, OUTPUT);
-    pinMode(CTL_ORA_C2, OUTPUT);
-    pinMode(CTL_ORA_C3, OUTPUT);
-    pinMode(CTL_ORA_C4, OUTPUT);
+    ledcSetup(LED_PWM_CHANNEL, LED_PWM_FREQ , LED_PWM_BITS);
+    ledcAttachPin(LED_PWM_PIN, LED_PWM_CHANNEL);
+    blinky_leds_set_dim_level(LOW);
 
-    pinMode(CTL_ORA_1, OUTPUT);
-    pinMode(CTL_ORA_2, OUTPUT);
-    pinMode(CTL_ORA_3, OUTPUT);
+    mcp.begin(false);
+    // all 16 bits are outputs
+    mcp.pinMode16(0);
+
 }
 
 uint8_t blinky_leds_get_ora()
 {
-    uint8_t out = 0;
-     out |= digitalRead(CTL_ORA_C1) << ORA_C1_BIT;
-     out |= digitalRead(CTL_ORA_C2) << ORA_C2_BIT;
-     out |= digitalRead(CTL_ORA_C3) << ORA_C3_BIT;
-     out |= digitalRead(CTL_ORA_C4) << ORA_C4_BIT;
-
-     out |= digitalRead(CTL_ORA_1) << ORA_1_BIT;
-     out |= digitalRead(CTL_ORA_2) << ORA_2_BIT;
-     out |= digitalRead(CTL_ORA_3) << ORA_3_BIT;
-    return out;
+    return (uint8_t) (0xff & mcp.read8(MCP23017_ORA_PORT));
 }
 
 void blinky_leds_set_ora(uint8_t val)
 {
-    digitalWrite(CTL_ORA_C1, (uint8_t)(val & ORA_C1_MASK));
-    digitalWrite(CTL_ORA_C2, (uint8_t)(val & ORA_C2_MASK));
-    digitalWrite(CTL_ORA_C3, (uint8_t)(val & ORA_C3_MASK));
-    digitalWrite(CTL_ORA_C4, (uint8_t)(val & ORA_C4_MASK));
-
-    digitalWrite(CTL_ORA_1, (uint8_t)(val & ORA_1_MASK));
-    digitalWrite(CTL_ORA_2, (uint8_t)(val & ORA_2_MASK));
-    digitalWrite(CTL_ORA_3, (uint8_t)(val & ORA_3_MASK));
+    mcp.write8(MCP23017_ORA_PORT, val);
 }
 
 uint8_t blinky_leds_get_red()
 {
-    uint8_t out = 0;
-     out |= digitalRead(CTL_RED_L) << RED_L_BIT;
-     out |= digitalRead(CTL_RED_C) << RED_C_BIT;
-     out |= digitalRead(CTL_RED_R) << RED_R_BIT;
-    return out;
+    return (uint8_t) (0xff & mcp.read8(MCP23017_RED_PORT));
 }
 
 void blinky_leds_set_red(uint8_t val)
 {
-    digitalWrite(CTL_RED_L, (uint8_t)(val & RED_L_MASK));
-    digitalWrite(CTL_RED_C, (uint8_t)(val & RED_C_MASK));
-    digitalWrite(CTL_RED_R, (uint8_t)(val & RED_R_MASK));
+    mcp.write8(MCP23017_RED_PORT, val);
 }
 
 void blinky_leds_clear()
 {
-    blinky_leds_set_ora(0);
-    blinky_leds_set_red(0);
+    mcp.write16(0);
 }
 
 void blinky_leds_seq(const struct seq_t *seq)
@@ -89,4 +80,9 @@ void blinky_leds_seq(const struct seq_t *seq)
     }
     delay(seq->seq_wait);
     blinky_leds_clear();
+}
+
+void blinky_leds_power_ctl(uint8_t power)
+{
+    digitalWrite(LED_EN_PIN, power & 1);
 }
