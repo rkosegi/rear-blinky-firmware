@@ -75,7 +75,15 @@ void blinky_leds_seq(const struct seq_t *seq)
 {
     for (int i = 0; i < seq->count; i++)
     {
-        seq->apply_fn(seq->steps[i]);
+        switch (seq->type)
+        {
+        case SEQ_TYPE_ORA:
+            blinky_leds_set_ora(seq->steps[i]);
+            break;
+        case SEQ_TYPE_RED:
+            blinky_leds_set_red(seq->steps[i]);
+            break;
+        }
         delay(seq->step_wait);
     }
     delay(seq->seq_wait);

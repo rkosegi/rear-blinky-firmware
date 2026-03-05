@@ -55,3 +55,6 @@
 #define RED_MODE_END            RED_MODE_START + 5
 #define ORA_MODE_LEFT           11
 #define ORA_MODE_RIGHT          12
+
+#define SEQ_TYPE_RED            0
+#define SEQ_TYPE_ORA            1

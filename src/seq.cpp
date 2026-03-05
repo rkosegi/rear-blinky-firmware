@@ -86,59 +86,66 @@ static uint8_t blink_red5_steps[] = {
 };
 
 struct seq_t turn_left_seq = {
-    .steps = (uint8_t *)&ora_left_steps,
-    .count = sizeof(ora_left_steps),
-    .apply_fn = blinky_leds_set_ora,
-    .step_wait = 100,
-    .seq_wait = 500,
+    .type       =   SEQ_TYPE_ORA,
+    .len        =   0,
+    .step_wait  =   100,
+    .seq_wait   =   500,
+    .count      =   sizeof(ora_left_steps),
+    .steps      =   (uint8_t *)&ora_left_steps,
 };
 
 struct seq_t turn_right_seq = {
-    .steps = (uint8_t *)&ora_right_steps,
-    .count = sizeof(ora_right_steps),
-    .apply_fn = blinky_leds_set_ora,
-    .step_wait = 100,
-    .seq_wait = 500,
+    .type       =   SEQ_TYPE_ORA,
+    .len        =   0,
+    .step_wait  =   100,
+    .seq_wait   =   500,
+    .count      =   sizeof(ora_right_steps),
+    .steps      =   (uint8_t *)&ora_right_steps,
 };
 
 struct seq_t blink_red1_seq = {
-    .steps = (uint8_t *)&blink_red1_steps,
-    .count = sizeof(blink_red1_steps),
-    .apply_fn = blinky_leds_set_red,
-    .step_wait = 250,
-    .seq_wait = 100,
+    .type       =   SEQ_TYPE_RED,
+    .len        =   0,
+    .step_wait  =   250,
+    .seq_wait   =   100,
+    .count      =   sizeof(blink_red1_steps),
+    .steps      =   (uint8_t *)&blink_red1_steps,
 };
 
 struct seq_t blink_red2_seq = {
-    .steps = (uint8_t *)&blink_red2_steps,
-    .count = sizeof(blink_red2_steps),
-    .apply_fn = blinky_leds_set_red,
-    .step_wait = 50,
-    .seq_wait = 20,
+    .type       =   SEQ_TYPE_RED,
+    .len        =   0,
+    .step_wait  =   50,
+    .seq_wait   =   20,
+    .count      =   sizeof(blink_red2_steps),
+    .steps      =   (uint8_t *)&blink_red2_steps,
 };
 
 struct seq_t blink_red3_seq = {
-    .steps = (uint8_t *)&blink_red3_steps,
-    .count = sizeof(blink_red3_steps),
-    .apply_fn = blinky_leds_set_red,
-    .step_wait = 30,
-    .seq_wait = 2000,
+    .type       =   SEQ_TYPE_RED,
+    .len        =   0,
+    .step_wait  =   30,
+    .seq_wait   =   2000,
+    .count      =   sizeof(blink_red3_steps),
+    .steps      =   (uint8_t *)&blink_red3_steps,
 };
 
 struct seq_t blink_red4_seq = {
-    .steps = (uint8_t *)&blink_red4_steps,
-    .count = sizeof(blink_red4_steps),
-    .apply_fn = blinky_leds_set_red,
-    .step_wait = 30,
-    .seq_wait = 50,
+    .type       =   SEQ_TYPE_RED,
+    .len        =   0,
+    .step_wait  = 30,
+    .seq_wait   = 50,
+    .count      = sizeof(blink_red4_steps),
+    .steps      = (uint8_t *)&blink_red4_steps,
 };
 
 struct seq_t blink_red5_seq = {
-    .steps = (uint8_t *)&blink_red5_steps,
-    .count = sizeof(blink_red5_steps),
-    .apply_fn = blinky_leds_set_red,
-    .step_wait = 300,
-    .seq_wait = 300,
+    .type       =   SEQ_TYPE_RED,
+    .len        =   0,
+    .step_wait  = 300,
+    .seq_wait   = 300,
+    .count      = sizeof(blink_red5_steps),
+    .steps      = (uint8_t *)&blink_red5_steps,
 };
 
 const struct seq_t *blinky_seq_ora_left_seq = &turn_left_seq;
